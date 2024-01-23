@@ -21,11 +21,12 @@ public class RandomWalk {
      */
     private void move(int dx, int dy) {
         // TO BE IMPLEMENTED  do move
+        x += dx;
+        y += dy;
 
 
         // SKELETON
-         throw new RuntimeException("Not implemented");
-        // END SOLUTION
+
     }
 
     /**
@@ -34,10 +35,10 @@ public class RandomWalk {
      * @param m the number of steps the drunkard takes
      */
     private void randomWalk(int m) {
-        // TO BE IMPLEMENTED 
-
-
-throw new RuntimeException("implementation missing");
+        // TO BE IMPLEMENTED
+        for (int i = 0; i < m; i++) {
+            randomMove();
+        }
     }
 
     /**
@@ -56,10 +57,10 @@ throw new RuntimeException("implementation missing");
      * @return the (Euclidean) distance from the origin to the current position.
      */
     public double distance() {
-        // TO BE IMPLEMENTED 
-
+        // TO BE IMPLEMENTED
+        return Math.sqrt(x * x + y * y);
         // SKELETON
-         return 0.0;
+
         // END SOLUTION
     }
 
@@ -81,11 +82,16 @@ throw new RuntimeException("implementation missing");
     }
 
     public static void main(String[] args) {
-        if (args.length == 0)
-            throw new RuntimeException("Syntax: RandomWalk steps [experiments]");
-        int m = Integer.parseInt(args[0]);
-        int n = 30;
-        if (args.length > 1) n = Integer.parseInt(args[1]);
+        int m = 5; // Default number of steps
+        int n = 20; // Default number of experiments
+
+        if (args.length > 0) {
+            m = Integer.parseInt(args[0]);
+        }
+
+        if (args.length > 1) {
+            n = Integer.parseInt(args[1]);
+        }
         double meanDistance = randomWalkMulti(m, n);
         System.out.println(m + " steps: " + meanDistance + " over " + n + " experiments");
     }
