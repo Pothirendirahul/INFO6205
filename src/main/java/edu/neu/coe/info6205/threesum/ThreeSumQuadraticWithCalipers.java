@@ -60,7 +60,7 @@ public class ThreeSumQuadraticWithCalipers implements ThreeSum {
                 while (left < right && a[right] == a[right - 1]) right--;
                 left++;
                 right--;
-            } else if (sum < 0) {
+            } else if (sum < 0) {//CHECKING SUM<0
                 left++;
             } else {
                 right--;

@@ -41,7 +41,7 @@ public class ThreeSumQuadratic implements ThreeSum {
         int left = j - 1;
         int right = j + 1;
 
-        while (left >= 0 && right < length) {
+        while (left >= 0 && right < length) {//RUNNING A WHILE LOOP
             int sum = a[left] + a[j] + a[right];
             if (sum == 0) {
 
