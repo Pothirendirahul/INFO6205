@@ -4,6 +4,8 @@
 
 package edu.neu.coe.info6205.util;
 
+import edu.neu.coe.info6205.sort.elementary.InsertionSort;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
