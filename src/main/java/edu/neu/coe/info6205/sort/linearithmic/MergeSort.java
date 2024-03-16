@@ -65,23 +65,15 @@ public class MergeSort<X extends Comparable<X>> extends SortWithHelper<X> {
         }
 
         // TO BE IMPLEMENTED  : implement merge sort with insurance and no-copy optimizations
+        int mid = from + (to - from)/2;
+        sort(aux, a, from, mid);
+        sort(aux, a, mid, to);
+        boolean leftSorted = true, rightSorted = true;
 
 
+        merge(aux, a, from, mid, to);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-throw new RuntimeException("implementation missing");
     }
 
     // CONSIDER combine with MergeSortBasic perhaps.

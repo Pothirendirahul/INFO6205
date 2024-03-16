@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ALL")
-public class HeapSortTest {
+public class  HeapSortTest {
 
     @Test
     public void sort0() throws Exception {

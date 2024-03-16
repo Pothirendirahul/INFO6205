@@ -5,11 +5,9 @@ package edu.neu.coe.info6205.util;
 
 import edu.neu.coe.info6205.sort.BaseHelper;
 import edu.neu.coe.info6205.sort.Helper;
+import edu.neu.coe.info6205.sort.HelperFactory;
 import edu.neu.coe.info6205.sort.SortWithHelper;
-import edu.neu.coe.info6205.sort.elementary.BubbleSort;
-import edu.neu.coe.info6205.sort.elementary.InsertionSort;
-import edu.neu.coe.info6205.sort.elementary.RandomSort;
-import edu.neu.coe.info6205.sort.elementary.ShellSort;
+import edu.neu.coe.info6205.sort.elementary.*;
 import edu.neu.coe.info6205.sort.linearithmic.TimSort;
 import edu.neu.coe.info6205.sort.linearithmic.*;
 
@@ -37,13 +35,50 @@ public class SortBenchmark {
 
     public static void main(String[] args) throws IOException {
         Config config = Config.load(SortBenchmark.class);
-        logger.info("SortBenchmark.main: " + config.get("SortBenchmark", "version") + " with word counts: " + Arrays.toString(args));
+        logger.info("SortBenchmark.main: " + config.get("sortbenchmark", "version") + " with word counts: " + Arrays.toString(args));
         if (args.length == 0) logger.warn("No word counts specified on the command line");
         SortBenchmark benchmark = new SortBenchmark(config);
+        benchmark.sortIntegers(10000);
         benchmark.sortStrings(Arrays.stream(args).map(Integer::parseInt));
-        if (benchmark.isConfigBenchmarkIntegerSorter("shellSort"))
-            benchmark.sortIntegersByShellSort(config.getInt("shellsort", "n", 100000));
-//        benchmark.sortLocalDateTimes(config.getInt("benchmarkdatesorters", "n", 100000), config);
+        benchmark.sortLocalDateTimes(10000, config);
+//        if (benchmark.isConfigBenchmarkIntegerSorter("mergesort")) {
+//            benchmark.sortIntegersByShellSort(config.getInt("shellsort", "n", 100000));
+//        }
+    }
+
+
+    private void sortIntegers(final int n) {
+        final Random random = new Random();
+
+        // sort int[]
+        final Supplier<int[]> intsSupplier = () -> {
+            int[] result = (int[]) Array.newInstance(int.class, n);
+            for (int i = 0; i < n; i++) result[i] = random.nextInt();
+            return result;
+        };
+
+        final double t1 = new Benchmark_Timer<int[]>(
+                "intArraysorter",
+                (xs) -> Arrays.copyOf(xs, xs.length),
+                Arrays::sort,
+                null
+        ).runFromSupplier(intsSupplier, 100);
+        for (TimeLogger timeLogger : timeLoggersLinearithmic) timeLogger.log(t1, n);
+
+        // sort Integer[]
+        final Supplier<Integer[]> integersSupplier = () -> {
+            Integer[] result = (Integer[]) Array.newInstance(Integer.class, n);
+            for (int i = 0; i < n; i++) result[i] = random.nextInt();
+            return result;
+        };
+
+        final double t2 = new Benchmark_Timer<Integer[]>(
+                "integerArraysorter",
+                (xs) -> Arrays.copyOf(xs, xs.length),
+                Arrays::sort,
+                null
+        ).runFromSupplier(integersSupplier, 100);
+        for (TimeLogger timeLogger : timeLoggersLinearithmic) timeLogger.log(t2, n);
     }
 
     public void sortLocalDateTimes(final int n, Config config) throws IOException {
@@ -95,6 +130,11 @@ public class SortBenchmark {
         if (isConfigBenchmarkStringSorter("quicksort"))
             runStringSortBenchmark(words, nWords, nRuns, new QuickSort_Basic<>(nWords, config), timeLoggersLinearithmic);
 
+        if (isConfigBenchmarkStringSorter("heapsort")) {
+            Helper<String> helper = HelperFactory.create("Heapsort", nWords, config);
+            runStringSortBenchmark(words, nWords, nRuns, new HeapSort<>(helper), timeLoggersLinearithmic);
+        }
+
         if (isConfigBenchmarkStringSorter("introsort"))
             runStringSortBenchmark(words, nWords, nRuns, new IntroSort<>(nWords, config), timeLoggersLinearithmic);
 
@@ -137,6 +177,11 @@ public class SortBenchmark {
 
         if (isConfigBenchmarkStringSorter("quicksort"))
             runStringSortBenchmark(words, nWords, nRuns, new QuickSort_Basic<>(nWords, config), timeLoggersLinearithmic);
+
+        if (isConfigBenchmarkStringSorter("heapsort")) {
+            Helper<String> helper = HelperFactory.create("Heapsort", nWords, config);
+            runStringSortBenchmark(words, nWords, nRuns, new HeapSort<>(helper), timeLoggersLinearithmic);
+        }
 
         if (isConfigBenchmarkStringSorter("introsort"))
             runStringSortBenchmark(words, nWords, nRuns, new IntroSort<>(nWords, config), timeLoggersLinearithmic);
@@ -209,10 +254,11 @@ public class SortBenchmark {
         }
     }
 
-    private void sortStrings(Stream<Integer> wordCounts) {
+    private void sortStrings(Stream<Integer> wordCounts) throws IOException {
         logger.info("Beginning String sorts");
 
         // NOTE: common words benchmark
+        benchmarkStringSortersInstrumented(getWords("3000-common-words.txt", SortBenchmark::lineAsList), config.getInt("benchmarkstringsorters", "words", 1000), config.getInt("benchmarkstringsorters", "runs", 1000));
 //        benchmarkStringSorters(getWords("3000-common-words.txt", SortBenchmark::lineAsList), config.getInt("benchmarkstringsorters", "words", 1000), config.getInt("benchmarkstringsorters", "runs", 1000));
 
         // NOTE: Leipzig English words benchmarks (according to command-line arguments)
